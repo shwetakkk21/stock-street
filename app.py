@@ -94,8 +94,7 @@ st.write("---")
 
 tab1, tab2, tab3 = st.tabs(["Live Explorer & Sync Engine", "Advanced Trend Analysis", "Asset Controls"])
 
-# app.py (Tab 1 snippet change update)
-# app.py (Inside Tab 1)
+# Tab 1
 
 with tab1:
     st.subheader("Live Data Editor")
@@ -105,10 +104,10 @@ with tab1:
     
     if st.button("Save Changes & Sync Sheet", type="primary"):
         try:
-            # 1. Format your structural list payload matching your sheet layout
+            # Format your structural list payload matching your sheet layout
             updated_data = [edited_df.columns.tolist()] + edited_df.values.tolist()
             
-            # 2. Extract the raw, un-wrapped authorization token string and metadata
+            # Extract the raw, un-wrapped authorization token string and metadata
             auth_token = worksheet.client.auth.token if hasattr(worksheet.client.auth, 'token') else worksheet.client.auth.access_token
             spreadsheet_id = worksheet.spreadsheet.id
             sheet_name = worksheet.title
@@ -119,8 +118,7 @@ with tab1:
                 "Content-Type": "application/json"
             }
 
-            # 3. BYPASS METHOD A: Clear the sheet completely from row 2 down via a raw REST API POST call
-            # This replaces the broken native worksheet.clear() method
+            # This replaces the native worksheet.clear() method via a raw REST API POST call
             clear_url = f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}/values/{sheet_name}!A2:Z:clear"
             clear_response = requests.post(clear_url, headers=headers)
             
@@ -128,12 +126,12 @@ with tab1:
                 st.error(f"Google Clear Gateway Rejected Request: {clear_response.text}")
                 st.stop()
 
-            # 4. BYPASS METHOD B: Write the new data matrix back starting at A2 via a raw REST API PUT call
-            # Fix: Keep the URL range specific to the starting block cell coordinate
+            # Write the new data matrix back starting at A2 via a raw REST API PUT call
+            # Keep the URL range specific to the starting block cell coordinate
             update_url = f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}/values/{sheet_name}!A2"
             params = {"valueInputOption": "USER_ENTERED"}
             
-            # Fix: Ensure the JSON body range matches the URL block string perfectly
+            # Ensure the JSON body range matches the URL block string perfectly
             payload = {
                 "range": f"{sheet_name}!A2",
                 "majorDimension": "ROWS",
