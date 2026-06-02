@@ -8,7 +8,7 @@ def render_login_screen():
     Google Account to initialize your account and access your stocks journal.
     """)
     if st.button("Authenticate with Google", type="primary", width='content'):
-        st.login()
+        st.login("google")
     st.stop()
 
 def render_sidebar_profile():
